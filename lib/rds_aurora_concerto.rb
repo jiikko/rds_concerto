@@ -1,6 +1,5 @@
 require "rds_aurora_concerto/version"
+require "rds_aurora_concerto/instance"
 
 module RdsAuroraConcerto
-  class Error < StandardError; end
-  # Your code goes here...
 end
