@@ -1,0 +1,13 @@
+region: ap-northeast-1
+source_instance:
+  identifier: a
+  cluster_identifier: b
+aws:
+  access_key_id: <%= '11111111' * 2 %>
+  secret_access_key: <%= '44' * 2 %>
+  account_id: 111111111
+  available_types:
+    - db.r4.large
+    - db.r4.2xlarge
+    - db.r4.3xlarge
+database_url_format: "mysql2://#{db_user}:#{db_password}@#%{db_endpoint}/#{db_name}?pool=5"
