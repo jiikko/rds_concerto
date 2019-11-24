@@ -15,7 +15,7 @@ class RdsAuroraConcerto::CLI < Thor
   option :type, aliases: "-t", default: "db.r4.large", desc: "インスタンスタイプ"
   def create(name = nil)
     unless name
-      list = concerto.replica_list(condition: :available)[0][:name]
+      list = concerto.replica_list(condition: :available).first
       name = list[0][:name]
     end
     concerto.clone!(instance: name, klass: options[:type])
