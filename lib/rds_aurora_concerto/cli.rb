@@ -93,4 +93,5 @@ class RdsAuroraConcerto::CLI < Thor
 
   def concerto
     @concerto ||= RdsAuroraConcerto::Aurora.new
+  end
 end
