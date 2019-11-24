@@ -50,8 +50,10 @@ module RdsAuroraConcerto::Aurora
       end
 
       def all_list
-        rds_client.describe_db_instances.db_instances.map{ |x|
-          response = rds_client.list_tags_for_resource(resource_name: get_arn(identifier: x.db_instance_identifier))
+        rds_client.describe_db_instances.db_instances.map do |db_instance|
+          response = rds_client.list_tags_for_resource(
+            resource_name: get_arn(identifier: db_instance.db_instance_identifier)
+          )
           {
             name: x.db_instance_identifier,
             size: x.db_instance_class,
@@ -63,7 +65,7 @@ module RdsAuroraConcerto::Aurora
             created_at: x.instance_create_time,
             tag: response.tag_list.map(&:to_hash),
           }
-        }
+        end
       end
 
       def clone!(name: nil, instance: "", klass: "db.r4.large", identifier: nil)
@@ -74,15 +76,15 @@ module RdsAuroraConcerto::Aurora
           key: "created_by",
           value: "#{identifier.nil? ? :cli : :web}_#{identifier || `hostname`.chomp}",
         }]
-        rds_client.restore_db_cluster_to_point_in_time({
+        rds_client.restore_db_cluster_to_point_in_time(
           db_cluster_identifier: name,
           source_db_cluster_identifier: config.source_cluster_identifier,
           restore_type: "copy-on-write",
           use_latest_restorable_time: true,
           db_cluster_parameter_group_name: "concerto-aurora-56-cluster",
-          tags: tags
-        })
-        rds_client.create_db_instance({
+          tags: tags,
+        )
+        rds_client.create_db_instance(
           db_instance_identifier: name,
           db_cluster_identifier: name,
           db_instance_class: klass,
@@ -91,14 +93,13 @@ module RdsAuroraConcerto::Aurora
           publicly_accessible: true,
           db_subnet_group_name: "default",
           db_parameter_group_name: "concerto-aurora-56",
-          tags: tags
-        })
+          tags: tags,
+        )
       end
 
       def destroy!(name: nil, skip_final_snapshot: true)
         return if [config.source_identifier,
                    config.source_cluster_identifier].include?(name)
-
 
         rds_client.delete_db_instance(db_instance_identifier: name, skip_final_snapshot: skip_final_snapshot)
         rds_client.delete_db_cluster(db_cluster_identifier: name, skip_final_snapshot: skip_final_snapshot)
@@ -111,4 +112,4 @@ module RdsAuroraConcerto::Aurora
       end
     end
   end
-  end
+end

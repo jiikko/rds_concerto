@@ -11,3 +11,7 @@ aws:
     - db.r4.2xlarge
     - db.r4.3xlarge
 database_url_format: "mysql2://#{db_user}:#{db_password}@#%{db_endpoint}/#{db_name}?pool=5"
+db_instance:
+  db_parameter_group_name: default
+  publicly_accessible: false
+  db_cluster_parameter_group_name: default
