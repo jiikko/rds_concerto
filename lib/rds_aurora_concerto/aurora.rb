@@ -71,7 +71,7 @@ module RdsAuroraConcerto::Aurora
         unless name
           name = "#{instance}-clone-#{Time.now.to_i}"
         end
-        identifier_value = "#{identifier || `hostname`.chomp}"
+        identifier_value = identifier || `hostname`.chomp
         tags = [{ key: "created_by", value: identifier_value }]
         create_resouces!(name: name, tags: tags, instance_class: klass)
       end
@@ -79,7 +79,7 @@ module RdsAuroraConcerto::Aurora
       def destroy!(name: nil, skip_final_snapshot: true)
         return if [config.source_identifier,
                    config.source_cluster_identifier].include?(name)
-        delete_resouces!(name: name: skip_final_snapshot: skip_final_snapshot)
+        delete_resouces!(name: name, skip_final_snapshot: skip_final_snapshot)
       end
 
       private
