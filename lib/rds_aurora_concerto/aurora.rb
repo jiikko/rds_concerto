@@ -54,8 +54,7 @@ module RdsAuroraConcerto::Aurora
           response = rds_client.list_tags_for_resource(
             resource_name: get_arn(identifier: db_instance.db_instance_identifier)
           )
-          {
-            name: x.db_instance_identifier,
+          { name: x.db_instance_identifier,
             size: x.db_instance_class,
             engine: x.engine,
             version: x.engine_version,
@@ -72,10 +71,29 @@ module RdsAuroraConcerto::Aurora
         unless name
           name = "#{instance}-clone-#{Time.now.to_i}"
         end
-        tags = [{
-          key: "created_by",
-          value: "#{identifier.nil? ? :cli : :web}_#{identifier || `hostname`.chomp}",
-        }]
+        identifier_value = "#{identifier || `hostname`.chomp}"
+        tags = [{ key: "created_by", value: identifier_value }]
+        create_resouces!(name: name, tags: tags, instance_class: klass)
+      end
+
+      def destroy!(name: nil, skip_final_snapshot: true)
+        return if [config.source_identifier,
+                   config.source_cluster_identifier].include?(name)
+        delete_resouces!(name: name: skip_final_snapshot: skip_final_snapshot)
+      end
+
+      private
+
+      def get_arn(region: , identifier: )
+        "arn:aws:rds:#{config.region}:#{config.aws_account_id}:db:#{identifier}"
+      end
+
+      def create_resouces!(name: , tags: ,instance_class: )
+        restore_db_cluster!(name: name, tags: tags)
+        create_db_instance!(name: name, tags: tags, instance_class: klass)
+      end
+
+      def restore_db_cluster!(name: , tags: )
         rds_client.restore_db_cluster_to_point_in_time(
           db_cluster_identifier: name,
           source_db_cluster_identifier: config.source_cluster_identifier,
@@ -84,10 +102,13 @@ module RdsAuroraConcerto::Aurora
           db_cluster_parameter_group_name: "concerto-aurora-56-cluster",
           tags: tags,
         )
+      end
+
+      def create_db_instance!(name: , instance_class: ,  tags: )
         rds_client.create_db_instance(
           db_instance_identifier: name,
           db_cluster_identifier: name,
-          db_instance_class: klass,
+          db_instance_class: instance_class,
           engine: "aurora",
           multi_az: false,
           publicly_accessible: true,
@@ -97,18 +118,9 @@ module RdsAuroraConcerto::Aurora
         )
       end
 
-      def destroy!(name: nil, skip_final_snapshot: true)
-        return if [config.source_identifier,
-                   config.source_cluster_identifier].include?(name)
-
+      def delete_resouces!(name: , skip_final_snapshot: )
         rds_client.delete_db_instance(db_instance_identifier: name, skip_final_snapshot: skip_final_snapshot)
         rds_client.delete_db_cluster(db_cluster_identifier: name, skip_final_snapshot: skip_final_snapshot)
-      end
-
-      private
-
-      def get_arn(region: , identifier: )
-        "arn:aws:rds:#{config.region}:#{config.aws_account_id}:db:#{identifier}"
       end
     end
   end
