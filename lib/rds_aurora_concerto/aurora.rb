@@ -8,12 +8,15 @@ module RdsAuroraConcerto::Aurora
     hash = YAML.load(ERB.new(yaml.read).result)
     Client.new(
       config: Config.new(hash),
-      rds_client: Aws::RDS::Client.new(
-        region: 'ap-northeast-1',
-        access_key_id: hash['aws']['access_key_id'].to_s,
-        secret_access_key: hash['aws']['secret_access_key'].to_s,
-      )
+      rds_client: Aws::RDS::Client.new(rds_client_args(hash)),
     )
+  end
+
+  def self.rds_client_args(hash)
+    { region: 'ap-northeast-1',
+      access_key_id: hash['aws']['access_key_id'].to_s,
+      secret_access_key: hash['aws']['secret_access_key'].to_s,
+    }
   end
 
   class Config
@@ -32,7 +35,7 @@ module RdsAuroraConcerto::Aurora
   end
 
   class Client
-    attr_reader :rds_client, :config
+    attr_reader :config, :rds_client
 
     def initialize(rds_client: , config: )
       @config = config
@@ -50,7 +53,7 @@ module RdsAuroraConcerto::Aurora
     end
 
     def cloned_list
-      self.all_list.reject{|x| x[:name] == confgi.instance_identifier }
+      self.all_list.reject{|x| x[:name] == config.source_identifier }
     end
 
     def all_list
@@ -58,14 +61,14 @@ module RdsAuroraConcerto::Aurora
         response = rds_client.list_tags_for_resource(
           resource_name: get_arn(identifier: db_instance.db_instance_identifier)
         )
-        { name: x.db_instance_identifier,
-          size: x.db_instance_class,
-          engine: x.engine,
-          version: x.engine_version,
-          storage: x.allocated_storage,
-          endpoint: x.endpoint&.address,
-          status: x.db_instance_status,
-          created_at: x.instance_create_time,
+        { name: db_instance.db_instance_identifier,
+          size: db_instance.db_instance_class,
+          engine: db_instance.engine,
+          version: db_instance.engine_version,
+          storage: db_instance.allocated_storage,
+          endpoint: db_instance.endpoint&.address,
+          status: db_instance.db_instance_status,
+          created_at: db_instance.instance_create_time,
           tag: response.tag_list.map(&:to_hash),
         }
       end
@@ -88,7 +91,7 @@ module RdsAuroraConcerto::Aurora
 
     private
 
-    def get_arn(region: , identifier: )
+    def get_arn(identifier: )
       "arn:aws:rds:#{config.region}:#{config.aws_account_id}:db:#{identifier}"
     end
 

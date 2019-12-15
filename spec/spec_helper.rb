@@ -1,5 +1,8 @@
 require "bundler/setup"
 require "rds_aurora_concerto"
+require 'pry'
+
+# Aws.config[:stub_responses] = true
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

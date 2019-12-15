@@ -2,13 +2,17 @@ require 'thor'
 
 class RdsAuroraConcerto::CLI < Thor
   desc "list", "レプリカやクローン一覧の閲覧"
-  def list
+  def list(stdout: true)
     out = ''
     out += show_replica
     out << "\n"
     out += show_clones
     out << "\n"
-    puts out
+    if stdout
+      puts out
+    else
+      out
+    end
   end
 
   desc "create NAME(レプリカを選択したい場合。指定しなければ適当に選びます)", "インスタンスの作成"
