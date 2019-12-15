@@ -1,15 +1,17 @@
 require 'erb'
+require 'yaml'
+require 'aws-sdk-rds'
 
 module RdsAuroraConcerto::Aurora
   def self.new
-    yaml = File.open('./.concert.yml')
+    yaml = File.open('./.concert.yml' || ENV['CONCERT_CONFIG_PATH'])
     hash = YAML.load(ERB.new(yaml.read).result)
-    client = Client.new(
+    Client.new(
       config: Config.new(hash),
       rds_client: Aws::RDS::Client.new(
         region: 'ap-northeast-1',
-        access_key_id: hash['aws']['access_key_id'],
-        secret_access_key: hash['aws']['secret_access_key'],
+        access_key_id: hash['aws']['access_key_id'].to_s,
+        secret_access_key: hash['aws']['secret_access_key'].to_s,
       )
     )
   end
