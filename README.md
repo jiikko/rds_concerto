@@ -19,8 +19,33 @@ Or install it yourself as:
     $ gem install rds_aurora_concerto
 
 ## Usage
+### Config
+Put yaml to project root as `.concert.yml`.
 
-TODO: Write usage instructions here
+```yaml
+region: ap-northeast-1
+source_instance:
+  identifier: a
+  cluster_identifier: b
+aws:
+  access_key_id: 11111111
+  secret_access_key: 222222
+  account_id: 111111111
+  available_types:
+    - db.r4.large
+    - db.r4.2xlarge
+    - db.r4.3xlarge
+  default_type: db.r4.large
+db_instance:
+  db_parameter_group_name: default
+  publicly_accessible: false
+  db_cluster_parameter_group_name: default
+```
+
+### Command
+```shell
+bundle exec bin/concerto --help
+```
 
 ## Warnging
 
