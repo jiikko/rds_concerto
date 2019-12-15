@@ -2,7 +2,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
   describe 'list' do
     context 'replica has non instance' do
       before do
-        time = Time.parse('2011-11-11 10:00:00')
+        time = Time.parse('2011-11-11 10:00:00+9:00')
         allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(
           stub_responses: {
             list_tags_for_resource: {
