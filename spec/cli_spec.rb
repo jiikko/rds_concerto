@@ -16,7 +16,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
 
     context 'replica has thow instance' do
       before do
-        time = Time.parse('2011-11-11 10:00:00+9:00')
+        time = Time.parse('2011-11-11 10:00:00+00')
         allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(
           stub_responses: {
             list_tags_for_resource: {
@@ -45,7 +45,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
         version: 1.0
         endpoint: goo.com
         status: avalable
-        created_at: 2011-11-11 01:00:00 UTC
+        created_at: 2011-11-11 10:00:00 UTC
         tags: [{:key=>"created_at", :value=>"izumikonata"}]
         -------
         name: 2
@@ -54,7 +54,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
         version: 1.1
         endpoint: goo.com
         status: avalable
-        created_at: 2011-11-11 01:00:00 UTC
+        created_at: 2011-11-11 10:00:00 UTC
         tags: [{:key=>"created_at", :value=>"izumikonata"}]
         EOH
         expect(actual.chomp).to eq(expected)
