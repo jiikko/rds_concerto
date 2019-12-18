@@ -1,6 +1,20 @@
 RSpec.describe RdsAuroraConcerto::CLI do
   describe 'list' do
-    context 'replica has non instance' do
+    context 'replica has no instance' do
+      before do
+        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+        end
+      it "return String" do
+        actual = RdsAuroraConcerto::CLI.new.list(stdout: false)
+        expected = <<~EOH
+        -レプリカ-
+        -クローン-
+        EOH
+        expect(actual).to eq(expected)
+      end
+    end
+
+    context 'replica has thow instance' do
       before do
         time = Time.parse('2011-11-11 10:00:00+9:00')
         allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(
@@ -20,7 +34,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
         )
       end
 
-      it "return list" do
+      it "return Strung" do
         actual = RdsAuroraConcerto::CLI.new.list(stdout: false)
         expected = <<~EOH
         -レプリカ-
