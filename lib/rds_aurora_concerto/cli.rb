@@ -96,6 +96,10 @@ class RdsAuroraConcerto::CLI < Thor
   end
 
   def concerto
-    @concerto ||= RdsAuroraConcerto::Aurora.new
+    @concerto
+  end
+
+  def initialize(config_path: nil)
+    @concerto ||= RdsAuroraConcerto::Aurora.new(config_path: config_path)
   end
 end

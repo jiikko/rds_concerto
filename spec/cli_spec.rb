@@ -3,7 +3,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
     context 'replica has no instance' do
       before do
         allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
-        end
+      end
       it "return String" do
         actual = RdsAuroraConcerto::CLI.new.list(stdout: false)
         expected = <<~EOH

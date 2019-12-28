@@ -3,8 +3,9 @@ require 'yaml'
 require 'aws-sdk-rds'
 
 module RdsAuroraConcerto::Aurora
-  def self.new
-    yaml = File.open('./.concert.yml' || ENV['CONCERT_CONFIG_PATH'])
+  def self.new(config_path: nil)
+    config_path = ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'
+    yaml = File.open(config_path)
     hash = YAML.load(ERB.new(yaml.read).result)
     Client.new(
       config: Config.new(hash),
