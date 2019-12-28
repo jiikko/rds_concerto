@@ -4,7 +4,7 @@ require 'aws-sdk-rds'
 
 module RdsAuroraConcerto::Aurora
   def self.new(config_path: nil)
-    config_path = ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'
+    config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'
     yaml = File.open(config_path)
     hash = YAML.load(ERB.new(yaml.read).result)
     Client.new(
@@ -28,10 +28,10 @@ module RdsAuroraConcerto::Aurora
       :aws_account_id
 
     def initialize(hash)
-      @source_identifier = hash['source_instance']['identifier']
-      @source_cluster_identifier = hash['source_instance']['cluster_identifier']
-      @region = hash['region']
-      @aws_account_id = hash['aws']['account_id']
+      @source_identifier = hash.dig('db_instance', 'source_instance', 'identifier')
+      @source_cluster_identifier = hash.dig('db_instance', 'source_instance', 'cluster_identifier')
+      @region = hash.dig('aws', 'region')
+      @aws_account_id = hash.dig('aws', 'account_id')
     end
   end
 

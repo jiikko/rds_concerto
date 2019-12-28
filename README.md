@@ -28,7 +28,7 @@ aws:
   access_key_id: <%= '11111111' * 2 %>
   secret_access_key: <%= '44' * 2 %>
   account_id: 111111111
-database_url_format: "mysql2://#{db_user}:#{db_password}@#%{db_endpoint}/#{db_name}?pool=5"
+database_url_format: "mysql2://{db_user}:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
 db_instance:
   db_parameter_group_name: default
   db_cluster_parameter_group_name: default
