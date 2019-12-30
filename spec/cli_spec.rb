@@ -122,7 +122,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
         )
       end
 
-      it "return Strung" do
+      it "return String" do
         actual = RdsAuroraConcerto::CLI.new.invoke(:list, [false], { config: config_path })
         expected = <<~EOH
         -レプリカ-
