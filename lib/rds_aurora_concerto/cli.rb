@@ -2,7 +2,8 @@ require 'thor'
 
 class RdsAuroraConcerto::CLI < Thor
   desc "list", "レプリカやクローン一覧の閲覧"
-  def list(stdout: true)
+  option :config, aliases: "-c", default: ".concerto", desc: "設定ファイル"
+  def list(stdout=true)
     out = ''
     out += show_replica
     out << "\n"
@@ -17,15 +18,15 @@ class RdsAuroraConcerto::CLI < Thor
 
   desc "create NAME(レプリカを選択したい場合。指定しなければ適当に選びます)", "インスタンスの作成"
   option :type, aliases: "-t", default: "db.r4.large", desc: "インスタンスタイプ"
+  option :config, aliases: "-c", default: ".concerto", desc: "設定ファイル"
   def create(name = nil)
-    unless name
-      list = concerto.replica_list(condition: :available).first
-      name = list[0][:name]
-    end
-    concerto.clone!(instance: name, klass: options[:type])
+    concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
+    concerto.clone!(instance_name: name, klass: options[:type],
+    )
   end
 
   desc "destroy NAME(指定しなかったら全部消します)", "インスタンスの削除"
+  option :config, aliases: "-c", default: ".concerto", desc: "設定ファイル"
   def destroy(name = nil)
     if name
       concerto.destroy!(name: name)
@@ -59,6 +60,7 @@ class RdsAuroraConcerto::CLI < Thor
   private
 
   def show_replica
+    concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
     out = "-レプリカ-"
     row = <<~EOH
       -------
@@ -77,6 +79,7 @@ class RdsAuroraConcerto::CLI < Thor
   end
 
   def show_clones
+    concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
     out = "-クローン-"
     row = <<~EOH
       -------
@@ -93,13 +96,5 @@ class RdsAuroraConcerto::CLI < Thor
       out << row % hash
     end
     out
-  end
-
-  def concerto
-    @concerto
-  end
-
-  def initialize(config_path: nil)
-    @concerto ||= RdsAuroraConcerto::Aurora.new(config_path: config_path)
   end
 end

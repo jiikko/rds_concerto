@@ -6,7 +6,7 @@ module RdsAuroraConcerto::Aurora
   def self.new(config_path: nil)
     config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'
     yaml = File.open(config_path)
-    hash = YAML.load(ERB.new(yaml.read).result)
+    hash = YAML.load(ERB.new(yaml.read).result) || raise('yaml parse error')
     Client.new(
       config: Config.new(hash),
       rds_client: Aws::RDS::Client.new(rds_client_args(hash)),
@@ -43,6 +43,10 @@ module RdsAuroraConcerto::Aurora
       @rds_client = rds_client
     end
 
+    def source_list(condition: :all)
+      replica_list(condition: :available)
+    end
+
     def replica_list(condition: :all)
       replica = self.all_list.select{|x| x[:name] == config.source_identifier }
       case condition
@@ -75,10 +79,16 @@ module RdsAuroraConcerto::Aurora
       end
     end
 
-    def clone!(name: nil, instance: "", klass: "db.r4.large", identifier: nil)
-      unless name
-        name = "#{instance}-clone-#{Time.now.to_i}"
+    def clone!(instance_name: nil, klass: "db.r4.large", identifier: nil)
+      unless instance_name
+        list = source_list
+        if list.empty?
+          raise 'source db instance do not found'
+        end
+        instance_name = list[0][:name]
       end
+
+      name = "#{instance_name}-clone-#{Time.now.to_i}"
       identifier_value = identifier || `hostname`.chomp
       tags = [{ key: "created_by", value: identifier_value }]
       create_resouces!(name: name, tags: tags, instance_class: klass)
