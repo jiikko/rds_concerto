@@ -25,13 +25,17 @@ module RdsAuroraConcerto::Aurora
       :source_identifier,
       :source_cluster_identifier,
       :region,
-      :aws_account_id
+      :aws_account_id,
+      :default_instance_type,
+      :available_types
 
     def initialize(hash)
       @source_identifier = hash.dig('db_instance', 'source_instance', 'identifier')
       @source_cluster_identifier = hash.dig('db_instance', 'source_instance', 'cluster_identifier')
       @region = hash.dig('aws', 'region')
       @aws_account_id = hash.dig('aws', 'account_id')
+      @default_instance_type = hash.dig('db_instance', "default_instance_type")
+      @available_types = hash.dig('db_instance', "available_types")
     end
   end
 
@@ -48,12 +52,12 @@ module RdsAuroraConcerto::Aurora
     end
 
     def replica_list(condition: :all)
-      replica = self.all_list.select{|x| x[:name] == config.source_identifier }
+      replica = self.all_list.select { |x| x[:name] == config.source_identifier }
       case condition
       when :all
         replica
       when :available
-        replica.select{|x| x[:status] == "available" }
+        replica.select { |x| x[:status] == "available" }
       end
     end
 
@@ -79,7 +83,7 @@ module RdsAuroraConcerto::Aurora
       end
     end
 
-    def clone!(instance_name: nil, klass: "db.r4.large", identifier: nil)
+    def clone!(instance_name: nil, klass: nil, identifier: nil)
       unless instance_name
         list = source_list
         if list.empty?
@@ -87,6 +91,7 @@ module RdsAuroraConcerto::Aurora
         end
         instance_name = list[0][:name]
       end
+      klass ||= config.default_instance_type
 
       name = "#{instance_name}-clone-#{Time.now.to_i}"
       identifier_value = identifier || `hostname`.chomp
@@ -106,9 +111,9 @@ module RdsAuroraConcerto::Aurora
       "arn:aws:rds:#{config.region}:#{config.aws_account_id}:db:#{identifier}"
     end
 
-    def create_resouces!(name: , tags: ,instance_class: )
+    def create_resouces!(name: , tags: , instance_class: )
       restore_db_cluster!(name: name, tags: tags)
-      create_db_instance!(name: name, tags: tags, instance_class: klass)
+      create_db_instance!(name: name, tags: tags, instance_class: instance_class)
     end
 
     def restore_db_cluster!(name: , tags: )
@@ -122,7 +127,7 @@ module RdsAuroraConcerto::Aurora
       )
     end
 
-    def create_db_instance!(name: , instance_class: ,  tags: )
+    def create_db_instance!(name: , tags: , instance_class: )
       rds_client.create_db_instance(
         db_instance_identifier: name,
         db_cluster_identifier: name,

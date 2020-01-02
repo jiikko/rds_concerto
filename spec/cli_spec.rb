@@ -1,4 +1,5 @@
 RSpec.describe RdsAuroraConcerto::CLI do
+  let(:time) { Time.parse('2011-11-11 10:00:00+00') }
   describe 'create' do
     let(:config_path) do
       yaml = <<~YAML
@@ -13,7 +14,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
             db_cluster_parameter_group_name: default
             publicly_accessible: false
             source_instance:
-              identifier: a
+              identifier: yabai
               cluster_identifier: b
             available_types:
               - db.r4.large
@@ -31,6 +32,29 @@ RSpec.describe RdsAuroraConcerto::CLI do
         expect {
           RdsAuroraConcerto::CLI.new.invoke(:create, [], { type: {}, config: config_path })
         }.to raise_error(RuntimeError)
+      end
+    end
+    context 'have 1 source db' do
+      it 'be success' do
+        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(
+          stub_responses: {
+            list_tags_for_resource: {
+              tag_list: [{ key: 'created_at', value: 'izumikonata' }]
+            },
+            describe_db_instances: {
+              db_instances: [
+                { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
+                  engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              ]
+            }
+          }
+        )
+        expect(
+          RdsAuroraConcerto::CLI.new.invoke(:create, [], { type: nil, config: config_path })
+        ).to be_truthy
+        expect(
+          RdsAuroraConcerto::CLI.new.invoke(:create, [], { config: config_path })
+        ).to be_truthy
       end
     end
   end
