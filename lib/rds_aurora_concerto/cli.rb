@@ -21,8 +21,7 @@ class RdsAuroraConcerto::CLI < Thor
   option :config, aliases: "-c", default: ".concerto", desc: "設定ファイル"
   def create(name = nil)
     concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
-    concerto.clone!(instance_name: name, klass: options[:type],
-    )
+    concerto.clone!(instance_name: name, klass: options[:type])
   end
 
   desc "destroy NAME(指定しなかったら全部消します)", "インスタンスの削除"

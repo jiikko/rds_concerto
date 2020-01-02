@@ -26,13 +26,11 @@ RSpec.describe RdsAuroraConcerto::CLI do
       file.path
     end
     context 'have no source db' do
-      before do
+      it 'error' do
         allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
           RdsAuroraConcerto::CLI.new.invoke(:create, [], { type: {}, config: config_path })
         }.to raise_error(RuntimeError)
-      end
-      it 'error' do
       end
     end
   end
