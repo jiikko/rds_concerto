@@ -94,7 +94,7 @@ module RdsAuroraConcerto::Aurora
       klass ||= config.default_instance_type
 
       name = "#{instance_name}-clone-#{Time.now.to_i}"
-      identifier_value = identifier || `hostname`.chomp
+      identifier_value = identifier || `hostname`.chomp[0..10]
       tags = [{ key: "created_by", value: identifier_value }]
       create_resouces!(name: name, tags: tags, instance_class: klass)
     end
@@ -112,8 +112,9 @@ module RdsAuroraConcerto::Aurora
     end
 
     def create_resouces!(name: , tags: , instance_class: )
-      restore_db_cluster!(name: name, tags: tags)
-      create_db_instance!(name: name, tags: tags, instance_class: instance_class)
+      { db_cluster_response: restore_db_cluster!(name: name, tags: tags),
+        db_instance_response: create_db_instance!(name: name, tags: tags, instance_class: instance_class),
+      }
     end
 
     def restore_db_cluster!(name: , tags: )
