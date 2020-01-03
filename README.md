@@ -62,3 +62,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## TODO
+* raise error when arg do not include in available_types
+* matomeru spec
+* matomeru args of RdsAuroraConcerto::CLI methods
