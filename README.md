@@ -75,3 +75,5 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * Implement url command
   * I want to use that it like `DATABASE_URL=$(bin/concerto url) bin/rails c`
   * `DATABASE_URL=mysql2://hogehoge:hogehoge@dbdb.ap-northeast-1.rds.amazonaws.com/monomydb?pool=5`
+* Implement pretent option at destroy
+* command log
