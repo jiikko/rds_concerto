@@ -33,6 +33,7 @@ db_instance:
   db_parameter_group_name: default
   db_cluster_parameter_group_name: default
   publicly_accessible: false
+  vpc: testing
   source_instance:
     identifier: a
     cluster_identifier: b

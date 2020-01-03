@@ -30,7 +30,8 @@ module RdsAuroraConcerto::Aurora
       :default_instance_type,
       :available_types,
       :db_parameter_group_name,
-      :db_cluster_parameter_group_name
+      :db_cluster_parameter_group_name,
+      :vpc
 
     def initialize(hash)
       @source_identifier = hash.dig('db_instance', 'source_instance', 'identifier')
@@ -41,6 +42,7 @@ module RdsAuroraConcerto::Aurora
       @available_types = hash.dig('db_instance', "available_types")
       @db_parameter_group_name = hash.dig('db_instance', 'db_parameter_group_name')
       @db_cluster_parameter_group_name = hash.dig('db_instance', 'db_cluster_parameter_group_name')
+      @vpc = hash.dig('db_instance', 'vpc')
     end
   end
 
@@ -146,6 +148,7 @@ module RdsAuroraConcerto::Aurora
         multi_az: false,
         publicly_accessible: true,
         db_subnet_group_name: "default",
+        vpc: config.vpc,
         db_parameter_group_name: config.db_parameter_group_name,
         tags: tags,
       )
