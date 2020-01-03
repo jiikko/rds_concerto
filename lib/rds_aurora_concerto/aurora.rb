@@ -3,6 +3,7 @@ require 'yaml'
 require 'aws-sdk-rds'
 
 module RdsAuroraConcerto::Aurora
+  DEFAULT_FILE_NAME = './.concert.yml'
   def self.new(config_path: nil)
     config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'
     yaml = File.open(config_path)
@@ -27,7 +28,9 @@ module RdsAuroraConcerto::Aurora
       :region,
       :aws_account_id,
       :default_instance_type,
-      :available_types
+      :available_types,
+      :db_parameter_group_name,
+      :db_cluster_parameter_group_name
 
     def initialize(hash)
       @source_identifier = hash.dig('db_instance', 'source_instance', 'identifier')
@@ -36,6 +39,8 @@ module RdsAuroraConcerto::Aurora
       @aws_account_id = hash.dig('aws', 'account_id')
       @default_instance_type = hash.dig('db_instance', "default_instance_type")
       @available_types = hash.dig('db_instance', "available_types")
+      @db_parameter_group_name = hash.dig('db_instance', 'db_parameter_group_name')
+      @db_cluster_parameter_group_name = hash.dig('db_instance', 'db_cluster_parameter_group_name')
     end
   end
 
@@ -127,7 +132,7 @@ module RdsAuroraConcerto::Aurora
         source_db_cluster_identifier: config.source_cluster_identifier,
         restore_type: "copy-on-write",
         use_latest_restorable_time: true,
-        db_cluster_parameter_group_name: "concerto-aurora-56-cluster",
+        db_cluster_parameter_group_name: config.db_cluster_parameter_group_name,
         tags: tags,
       )
     end
@@ -141,7 +146,7 @@ module RdsAuroraConcerto::Aurora
         multi_az: false,
         publicly_accessible: true,
         db_subnet_group_name: "default",
-        db_parameter_group_name: "concerto-aurora-56",
+        db_parameter_group_name: config.db_parameter_group_name,
         tags: tags,
       )
     end
