@@ -109,14 +109,14 @@ module RdsAuroraConcerto::Aurora
       create_resouces!(name: name, tags: tags, instance_class: klass) unless dry_run
     end
 
-    def destroy!(name: nil, skip_final_snapshot: true)
+    def destroy!(name: nil, skip_final_snapshot: true, dry_run: false)
       if [ config.source_identifier, config.source_cluster_identifier].include?(name)
         raise 'command failed. can not delete source resource.'
       end
-      unless replica_list.map(&:name).include?(name)
+      if not cloned_list.map {|x| x[:name] }.include?(name)
         raise 'command failed. do not found resource.'
       end
-      delete_resouces!(name: name, skip_final_snapshot: skip_final_snapshot)
+      delete_resouces!(name: name, skip_final_snapshot: skip_final_snapshot) unless dry_run
     end
 
     private

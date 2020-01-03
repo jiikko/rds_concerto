@@ -33,7 +33,7 @@ class RdsAuroraConcerto::CLI < Thor
   option :name, desc: "instance identifier of delete target", required: true
   def destroy
     concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
-    concerto.destroy!(name: options[:name])
+    concerto.destroy!(name: options[:name], dry_run: options[:pretend])
   end
 
   # desc "url NAME(URL を取得するインスタンスを指定したい場合。指定しなければ適当に選びます)", "インスタンスに接続するための URL の取得"
