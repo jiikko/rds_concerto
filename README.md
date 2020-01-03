@@ -51,6 +51,7 @@ bundle exec bin/concerto --help
 ## Warnging
 
 This tool is not provied data mask feature. You will need to mask in other ways.
+I think good way is to do clone from masked db. the masked db do to restore from backup each day.
 
 ## Development
 
