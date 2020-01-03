@@ -1,6 +1,10 @@
 require 'thor'
 
 class RdsAuroraConcerto::CLI < Thor
+  # https://github.com/erikhuda/thor/issues/607
+  include Thor::Actions
+  add_runtime_options!
+
   desc "list", "レプリカやクローン一覧の閲覧"
   option :config, aliases: "-c", default: RdsAuroraConcerto::Aurora::DEFAULT_FILE_NAME, desc: "設定ファイル"
   def list(stdout=true)
@@ -19,10 +23,9 @@ class RdsAuroraConcerto::CLI < Thor
   desc "create NAME(レプリカを選択したい場合。指定しなければ適当に選びます)", "インスタンスの作成"
   option :type, aliases: "-t", default: nil, desc: "インスタンスタイプ"
   option :config, aliases: "-c", default: RdsAuroraConcerto::Aurora::DEFAULT_FILE_NAME, desc: "設定ファイル"
-  option :dry_run, aliases: "-d", default: false, desc: "dry-run"
   def create(name = nil)
     concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
-    concerto.clone!(instance_name: name, klass: options[:type], dry_run: options[:dry_run])
+    concerto.clone!(instance_name: name, klass: options[:type], dry_run: options[:pretend])
   end
 
   desc "destroy NAME", "インスタンスの削除"
