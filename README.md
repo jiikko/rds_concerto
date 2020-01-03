@@ -7,7 +7,7 @@ This gem provide feature which to clone Aurora instance.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rds_aurora_concerto'
+gem 'rds_aurora_concerto', require: false, group: :development
 ```
 
 And then execute:
