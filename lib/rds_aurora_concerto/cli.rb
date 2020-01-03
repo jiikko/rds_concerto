@@ -17,11 +17,12 @@ class RdsAuroraConcerto::CLI < Thor
   end
 
   desc "create NAME(レプリカを選択したい場合。指定しなければ適当に選びます)", "インスタンスの作成"
-  option :type, aliases: "-t", default: "db.r4.large", desc: "インスタンスタイプ"
+  option :type, aliases: "-t", default: nil, desc: "インスタンスタイプ"
   option :config, aliases: "-c", default: RdsAuroraConcerto::Aurora::DEFAULT_FILE_NAME, desc: "設定ファイル"
+  option :dry_run, aliases: "-d", default: false, desc: "dry-run"
   def create(name = nil)
     concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
-    concerto.clone!(instance_name: name, klass: options[:type])
+    concerto.clone!(instance_name: name, klass: options[:type], dry_run: options[:dry_run])
   end
 
   desc "destroy NAME", "インスタンスの削除"

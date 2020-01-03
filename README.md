@@ -33,7 +33,7 @@ db_instance:
   db_parameter_group_name: default
   db_cluster_parameter_group_name: default
   publicly_accessible: false
-  vpc: testing
+  db_subnet_group_name: default-vpc-**************
   source_instance:
     identifier: a
     cluster_identifier: b
@@ -43,6 +43,9 @@ db_instance:
     - db.r4.3xlarge
   default_instance_type: db.r4.large
 ```
+
+* db_instance.db_subnet_group_name
+  * optional. need subnet name, if you want public access.
 
 ### Command
 ```shell

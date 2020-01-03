@@ -31,7 +31,7 @@ module RdsAuroraConcerto::Aurora
       :available_types,
       :db_parameter_group_name,
       :db_cluster_parameter_group_name,
-      :vpc
+      :db_subnet_group_name
 
     def initialize(hash)
       @source_identifier = hash.dig('db_instance', 'source_instance', 'identifier')
@@ -42,7 +42,7 @@ module RdsAuroraConcerto::Aurora
       @available_types = hash.dig('db_instance', "available_types")
       @db_parameter_group_name = hash.dig('db_instance', 'db_parameter_group_name')
       @db_cluster_parameter_group_name = hash.dig('db_instance', 'db_cluster_parameter_group_name')
-      @vpc = hash.dig('db_instance', 'vpc')
+      @db_subnet_group_name = hash.dig('db_instance', 'db_subnet_group_name')
     end
   end
 
@@ -51,6 +51,9 @@ module RdsAuroraConcerto::Aurora
 
     def initialize(rds_client: , config: )
       @config = config
+      if ENV['VERBOSE_CONCERTO']
+        puts @config.inspect
+      end
       @rds_client = rds_client
     end
 
@@ -90,7 +93,7 @@ module RdsAuroraConcerto::Aurora
       end
     end
 
-    def clone!(instance_name: nil, klass: nil, identifier: nil)
+    def clone!(instance_name: nil, klass: nil, identifier: nil, dry_run: false)
       unless instance_name
         list = source_list
         if list.empty?
@@ -103,7 +106,7 @@ module RdsAuroraConcerto::Aurora
       name = "#{instance_name}-clone-#{Time.now.to_i}"
       identifier_value = identifier || `hostname`.chomp[0..10]
       tags = [{ key: "created_by", value: identifier_value }]
-      create_resouces!(name: name, tags: tags, instance_class: klass)
+      create_resouces!(name: name, tags: tags, instance_class: klass) unless dry_run
     end
 
     def destroy!(name: nil, skip_final_snapshot: true)
@@ -135,6 +138,7 @@ module RdsAuroraConcerto::Aurora
         restore_type: "copy-on-write",
         use_latest_restorable_time: true,
         db_cluster_parameter_group_name: config.db_cluster_parameter_group_name,
+        db_subnet_group_name: config.db_subnet_group_name,
         tags: tags,
       )
     end
@@ -144,11 +148,10 @@ module RdsAuroraConcerto::Aurora
         db_instance_identifier: name,
         db_cluster_identifier: name,
         db_instance_class: instance_class,
-        engine: "aurora",
+        engine: "aurora-mysql",
         multi_az: false,
         publicly_accessible: true,
-        db_subnet_group_name: "default",
-        vpc: config.vpc,
+        db_subnet_group_name: config.db_subnet_group_name,
         db_parameter_group_name: config.db_parameter_group_name,
         tags: tags,
       )
