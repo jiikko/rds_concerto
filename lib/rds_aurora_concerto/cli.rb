@@ -24,16 +24,12 @@ class RdsAuroraConcerto::CLI < Thor
     concerto.clone!(instance_name: name, klass: options[:type])
   end
 
-  desc "destroy NAME(指定しなかったら全部消します)", "インスタンスの削除"
+  desc "destroy NAME", "インスタンスの削除"
   option :config, aliases: "-c", default: ".concerto", desc: "設定ファイル"
-  option :name, default: nil, desc: "instance identifier of delete target"
+  option :name, desc: "instance identifier of delete target", required: true
   def destroy
     concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
-    if options[:name]
-      concerto.destroy!(name: options[:name])
-    else
-      concerto.cloned_list.each{|i| concerto.destroy!(name: i[:name]) }
-    end
+    concerto.destroy!(name: options[:name])
   end
 
   # desc "url NAME(URL を取得するインスタンスを指定したい場合。指定しなければ適当に選びます)", "インスタンスに接続するための URL の取得"
