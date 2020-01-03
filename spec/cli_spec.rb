@@ -59,6 +59,42 @@ RSpec.describe RdsAuroraConcerto::CLI do
     end
   end
 
+  describe 'destroy' do
+    context 'when it assigns db instance that do not exist' do
+      let(:config_path) do
+        yaml = <<~YAML
+          aws:
+            region: ap-northeast-1
+            access_key_id: <%= '11111111' %>
+            secret_access_key: <%= '44' %>
+            account_id: 111111111
+          database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
+          db_instance:
+            db_parameter_group_name: default
+            db_cluster_parameter_group_name: default
+            publicly_accessible: false
+            source_instance:
+              identifier: yabai
+              cluster_identifier: b
+            available_types:
+              - db.r4.large
+              - db.r4.2xlarge
+              - db.r4.3xlarge
+            default_instance_type: db.r4.large
+        YAML
+        file = Tempfile.new('yaml')
+        File.open(file.path, 'w') { |f| f.puts yaml }
+        file.path
+      end
+      it 'error' do
+        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+        expect {
+          RdsAuroraConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: config_path })
+        }.to raise_error(RuntimeError, 'command failed. do not found resource.')
+      end
+    end
+  end
+
   describe 'list' do
     context 'replica has no instance' do
       let(:config_path) do

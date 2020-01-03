@@ -26,9 +26,11 @@ class RdsAuroraConcerto::CLI < Thor
 
   desc "destroy NAME(指定しなかったら全部消します)", "インスタンスの削除"
   option :config, aliases: "-c", default: ".concerto", desc: "設定ファイル"
-  def destroy(name = nil)
-    if name
-      concerto.destroy!(name: name)
+  option :name, default: nil, desc: "instance identifier of delete target"
+  def destroy
+    concerto = RdsAuroraConcerto::Aurora.new(config_path: options[:config])
+    if options[:name]
+      concerto.destroy!(name: options[:name])
     else
       concerto.cloned_list.each{|i| concerto.destroy!(name: i[:name]) }
     end

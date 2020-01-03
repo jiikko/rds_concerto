@@ -100,8 +100,12 @@ module RdsAuroraConcerto::Aurora
     end
 
     def destroy!(name: nil, skip_final_snapshot: true)
-      return if [config.source_identifier,
-                 config.source_cluster_identifier].include?(name)
+      if [ config.source_identifier, config.source_cluster_identifier].include?(name)
+        raise 'command failed. can not delete source resource.'
+      end
+      unless replica_list.map(&:name).include?(name)
+        raise 'command failed. do not found resource.'
+      end
       delete_resouces!(name: name, skip_final_snapshot: skip_final_snapshot)
     end
 
@@ -143,8 +147,9 @@ module RdsAuroraConcerto::Aurora
     end
 
     def delete_resouces!(name: , skip_final_snapshot: )
-      rds_client.delete_db_instance(db_instance_identifier: name, skip_final_snapshot: skip_final_snapshot)
-      rds_client.delete_db_cluster(db_cluster_identifier: name, skip_final_snapshot: skip_final_snapshot)
+      { db_instance_response: rds_client.delete_db_instance(db_instance_identifier: name, skip_final_snapshot: skip_final_snapshot),
+        rdb_cluster_response: rds_client.delete_db_cluster(db_cluster_identifier: name, skip_final_snapshot: skip_final_snapshot),
+      }
     end
   end
 end
