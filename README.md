@@ -42,10 +42,14 @@ db_instance:
     - db.r4.2xlarge
     - db.r4.3xlarge
   default_instance_type: db.r4.large
+  master_username: new_username
+  master_user_password: new_password
 ```
 
 * db_instance.db_subnet_group_name
   * optional. need subnet name, if you want public access.
+* db_instance.master_username, db_instance.master_user_password
+  * optional.
 
 ### Command
 ```shell
@@ -76,3 +80,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
   * I want to use that it like `DATABASE_URL=$(bin/concerto url) bin/rails c`
   * `DATABASE_URL=mysql2://hogehoge:hogehoge@dbdb.ap-northeast-1.rds.amazonaws.com/monomydb?pool=5`
 * command log
+* override mysql login and password
