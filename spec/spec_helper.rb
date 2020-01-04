@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "rds_aurora_concerto"
+require "rds_concerto"
 require 'pry'
 
 # Aws.config[:stub_responses] = true

@@ -1,4 +1,4 @@
-# RdsAuroraConcerto
+# RdsConcerto
 
 This gem provide feature which to clone Aurora instance.
 
@@ -7,7 +7,7 @@ This gem provide feature which to clone Aurora instance.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rds_aurora_concerto', require: false, group: :development
+gem 'rds_concerto', require: false, group: :development
 ```
 
 And then execute:
@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install rds_aurora_concerto
+    $ gem install rds_concerto
 
 ## Usage
 ### Config
@@ -75,7 +75,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## TODO
 * raise error when arg do not include in available_types
 * matomeru spec
-* matomeru args of RdsAuroraConcerto::CLI methods
+* matomeru args of RdsConcerto::CLI methods
 * Implement url command
   * I want to use that it like `DATABASE_URL=$(bin/concerto url) bin/rails c`
   * `DATABASE_URL=mysql2://hogehoge:hogehoge@dbdb.ap-northeast-1.rds.amazonaws.com/monomydb?pool=5`

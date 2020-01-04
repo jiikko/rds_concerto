@@ -2,7 +2,7 @@ require 'erb'
 require 'yaml'
 require 'aws-sdk-rds'
 
-module RdsAuroraConcerto::Aurora
+module RdsConcerto::Aurora
   DEFAULT_FILE_NAME = './.concert.yml'
   def self.new(config_path: nil)
     config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'

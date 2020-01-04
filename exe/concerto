@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
-require "rds_aurora_concerto"
+require "rds_concerto"
 
-RdsAuroraConcerto::CLI.start(ARGV)
+RdsConcerto::CLI.start(ARGV)

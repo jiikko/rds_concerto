@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rds_aurora_concerto (0.1.0)
+    rds_concerto (0.1.0)
       aws-sdk-rds
       thor
 
@@ -50,7 +50,7 @@ DEPENDENCIES
   bundler
   pry
   rake (~> 10.0)
-  rds_aurora_concerto!
+  rds_concerto!
   rspec (~> 3.0)
 
 BUNDLED WITH

@@ -1,16 +1,16 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "rds_aurora_concerto/version"
+require "rds_concerto/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "rds_aurora_concerto"
-  spec.version       = RdsAuroraConcerto::VERSION
+  spec.name          = "rds_concerto"
+  spec.version       = RdsConcerto::VERSION
   spec.authors       = ["jiikko"]
   spec.email         = ["n905i.1214@gmail.com"]
 
   spec.summary       = %q{tool that to clone AWS-RDS Aurora instance}
   spec.description   = spec.summary
-  spec.homepage      = "https://github.com/jiikko/rds_aurora_concerto"
+  spec.homepage      = "https://github.com/jiikko/rds_concerto"
   spec.license       = "MIT"
 
   # Specify which files should be added to the gem when it is released.

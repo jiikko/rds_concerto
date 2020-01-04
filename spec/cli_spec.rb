@@ -1,4 +1,4 @@
-RSpec.describe RdsAuroraConcerto::CLI do
+RSpec.describe RdsConcerto::CLI do
   let(:time) { Time.parse('2011-11-11 10:00:00+00') }
   describe 'create' do
     let(:config_path) do
@@ -28,15 +28,15 @@ RSpec.describe RdsAuroraConcerto::CLI do
     end
     context 'have no source db' do
       it 'error' do
-        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
-          RdsAuroraConcerto::CLI.new.invoke(:create, [], { type: {}, config: config_path })
+          RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: config_path })
         }.to raise_error(RuntimeError)
       end
     end
     context 'have 1 source db' do
       it 'be success' do
-        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
           stub_responses: {
             list_tags_for_resource: {
               tag_list: [{ key: 'created_at', value: 'izumikonata' }]
@@ -50,10 +50,10 @@ RSpec.describe RdsAuroraConcerto::CLI do
           }
         )
         expect(
-          RdsAuroraConcerto::CLI.new.invoke(:create, [], { type: nil, config: config_path })
+          RdsConcerto::CLI.new.invoke(:create, [], { type: nil, config: config_path })
         ).to be_truthy
         expect(
-          RdsAuroraConcerto::CLI.new.invoke(:create, [], { config: config_path })
+          RdsConcerto::CLI.new.invoke(:create, [], { config: config_path })
         ).to be_truthy
       end
     end
@@ -87,9 +87,9 @@ RSpec.describe RdsAuroraConcerto::CLI do
         file.path
       end
       it 'error' do
-        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
-          RdsAuroraConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: config_path })
+          RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: config_path })
         }.to raise_error(RuntimeError, 'command failed. do not found resource.')
       end
     end
@@ -123,10 +123,10 @@ RSpec.describe RdsAuroraConcerto::CLI do
         file.path
       end
       before do
-        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
       end
       it "return String" do
-        actual = RdsAuroraConcerto::CLI.new.invoke(:list, [false], { config: config_path })
+        actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: config_path })
         expected = <<~EOH
         -レプリカ-
         -クローン-
@@ -163,7 +163,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
       end
       before do
         time = Time.parse('2011-11-11 10:00:00+00')
-        allow(RdsAuroraConcerto::Aurora).to receive(:rds_client_args).and_return(
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
           stub_responses: {
             list_tags_for_resource: {
               tag_list: [{ key: 'created_at', value: 'izumikonata' }]
@@ -181,7 +181,7 @@ RSpec.describe RdsAuroraConcerto::CLI do
       end
 
       it "return String" do
-        actual = RdsAuroraConcerto::CLI.new.invoke(:list, [false], { config: config_path })
+        actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: config_path })
         expected = <<~EOH
         -レプリカ-
         -クローン--------
