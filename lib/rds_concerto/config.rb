@@ -42,14 +42,13 @@ class RdsConcerto::Config
     def validate_presence
       requireds =
         %w( source_identifier
-          source_cluster_identifier
-          region
-          aws_account_id
-          default_instance_type
-          available_types
-          db_parameter_group_name
-          db_cluster_parameter_group_name
-      )
+            source_cluster_identifier
+            region
+            aws_account_id
+            default_instance_type
+            db_parameter_group_name
+            db_cluster_parameter_group_name
+        )
       blank_names = []
       requireds.each do |name|
         if public_send(name).nil?
