@@ -4,7 +4,7 @@ require 'aws-sdk-rds'
 
 module RdsConcerto::Aurora
   def self.new(config_path: nil)
-    config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || './.concert.yml'
+    config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || RdsConcerto::DEFAULT_CONFIG_FILE_NAME
     yaml = File.open(config_path)
     hash = YAML.load(ERB.new(yaml.read).result) || raise('yaml parse error')
     config = Config.new(hash)
