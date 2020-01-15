@@ -33,7 +33,6 @@ RSpec.describe RdsConcerto::CLI do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts 'aaa:' }
-
         expect {
           RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: file.path })
         }.to raise_error(RuntimeError, /Check config yaml/)
@@ -99,13 +98,15 @@ RSpec.describe RdsConcerto::CLI do
         stub_responses: {
           describe_db_instances: {
             db_instances: [
-              { db_instance_identifier: 'deleted', db_instance_class: 'yabai', engine: 'large.2x',
+              { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
+                engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-clone-11', db_instance_class: 'yabai', engine: 'large.2x',
                 engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
             ]
           }
         }
       )
-      RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'deleted', config: valid_yaml_file.path })
+      RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'yabai-clone-11', config: valid_yaml_file.path })
     end
   end
 
@@ -133,10 +134,12 @@ RSpec.describe RdsConcerto::CLI do
             },
             describe_db_instances: {
               db_instances: [
-                { db_instance_identifier: '1', db_instance_class: 'yabai', engine: 'large.2x',
-                  engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'avalable', instance_create_time: time },
-              { db_instance_identifier: '2', db_instance_class: 'sugoi', engine: 'large.3x',
-                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'avalable', instance_create_time: time },
+                { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
+                  engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-clone', db_instance_class: 'sugoi', engine: 'large.3x',
+                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-not-clone', db_instance_class: 'sugoi', engine: 'large.3x',
+                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
               ]
             }
           }
@@ -145,23 +148,22 @@ RSpec.describe RdsConcerto::CLI do
       it "return String" do
         actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: valid_yaml_file.path })
         expected = <<~EOH
-        -source db instances-
-        -クローン--------
-        name: 1
+        -source db instances--------
+        name: yabai
         size: yabai
         engine: large.2x
         version: 1.0
         endpoint: goo.com
-        status: avalable
+        status: available
         created_at: 2011-11-11 10:00:00 UTC
-        tags: [{:key=>"created_at", :value=>"izumikonata"}]
-        -------
-        name: 2
+
+        -クローン--------
+        name: yabai-clone
         size: sugoi
         engine: large.3x
         version: 1.1
         endpoint: goo.com
-        status: avalable
+        status: available
         created_at: 2011-11-11 10:00:00 UTC
         tags: [{:key=>"created_at", :value=>"izumikonata"}]
         EOH

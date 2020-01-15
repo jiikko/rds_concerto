@@ -10,11 +10,12 @@ class RdsConcerto::Aurora::Client
   end
 
   def source_db_instance
-    self.all_instances.detect { |x| x[:name] == config.source_identifier }
+    @source_db_instance ||= self.all_instances.detect { |x| x[:name] == config.source_identifier }
   end
 
   def cloned_instances
-    self.all_instances.reject {|x| x[:name] == config.source_identifier }
+    list = self.all_instances.reject { |x| x[:name] == config.source_identifier }
+    list.select { |x| /^#{clone_instance_name_base}/ =~ x[:name] }
   end
 
   def all_instances
@@ -36,22 +37,10 @@ class RdsConcerto::Aurora::Client
   end
 
   def clone!(instance_name: nil, klass: nil, identifier: nil, dry_run: false)
-    unless instance_name
-      source = source_db_instance
-      unless source
-        raise 'source db instance do not found'
-      end
-      unless source[:status] == "available"
-        raise 'source db instance do not available'
-      end
-
-      instance_name = source[:name]
-    end
-    klass ||= config.default_instance_type
-    name = "#{instance_name}-clone-#{Time.now.to_i}"
+    name = "#{clone_instance_name_base}-#{Time.now.to_i}"
     identifier_value = identifier || `hostname`.chomp[0..10]
     tags = [{ key: "created_by", value: identifier_value }]
-
+    klass ||= config.default_instance_type
     RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name, config: config).
       create!(tags: tags, instance_class: klass) unless dry_run
   end
@@ -71,5 +60,17 @@ class RdsConcerto::Aurora::Client
 
   def get_arn(identifier: )
     "arn:aws:rds:#{config.region}:#{config.aws_account_id}:db:#{identifier}"
+  end
+
+  def clone_instance_name_base
+    source = source_db_instance
+    unless source
+      raise 'source db instance do not found'
+    end
+    unless source[:status] == "available"
+      raise 'source db instance do not available'
+    end
+    instance_name = source[:name]
+    "#{source[:name]}-clone"
   end
 end

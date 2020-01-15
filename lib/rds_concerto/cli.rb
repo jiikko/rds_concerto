@@ -23,17 +23,17 @@ class RdsConcerto::CLI < Thor
   desc "create NAME(レプリカを選択したい場合。指定しなければ適当に選びます)", "インスタンスの作成"
   option :type, aliases: "-t", default: nil, desc: "インスタンスタイプ"
   option :config, aliases: "-c", default: RdsConcerto::DEFAULT_CONFIG_FILE_NAME, desc: "設定ファイル"
-  def create(name = nil)
+  def create
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    concerto.clone!(instance_name: name, klass: options[:type], dry_run: options[:pretend])
+    concerto.clone!(klass: options[:type], dry_run: options[:pretend])
   end
 
   desc "destroy NAME", "インスタンスの削除"
   option :config, aliases: "-c", default: RdsConcerto::DEFAULT_CONFIG_FILE_NAME,  desc: "設定ファイル"
   option :name, desc: "instance identifier of delete target", required: true
-  def destroy
+  def destroy(name=nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    concerto.destroy!(name: options[:name], dry_run: options[:pretend])
+    concerto.destroy!(name: name || options[:name], dry_run: options[:pretend])
   end
 
   # desc "url NAME(URL を取得するインスタンスを指定したい場合。指定しなければ適当に選びます)", "インスタンスに接続するための URL の取得"
