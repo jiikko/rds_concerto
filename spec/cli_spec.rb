@@ -10,17 +10,18 @@ RSpec.describe RdsConcerto::CLI do
             account_id: 111111111
           database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
           db_instance:
-            db_parameter_group_name: default
-            db_cluster_parameter_group_name: default
-            publicly_accessible: false
-            source_instance:
+            source:
               identifier: yabai
               cluster_identifier: b
-            available_types:
-              - db.r4.large
-              - db.r4.2xlarge
-              - db.r4.3xlarge
-            default_instance_type: db.r4.large
+            new:
+              db_parameter_group_name: default
+              db_cluster_parameter_group_name: default
+              publicly_accessible: false
+              available_types:
+                - db.r4.large
+                - db.r4.2xlarge
+                - db.r4.3xlarge
+              default_instance_type: db.r4.large
       YAML
       file = Tempfile.new('yaml')
       File.open(file.path, 'w') { |f| f.puts yaml }
@@ -70,17 +71,18 @@ RSpec.describe RdsConcerto::CLI do
             account_id: 111111111
           database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
           db_instance:
-            db_parameter_group_name: default
-            db_cluster_parameter_group_name: default
-            publicly_accessible: false
-            source_instance:
+            source:
               identifier: yabai
               cluster_identifier: b
-            available_types:
-              - db.r4.large
-              - db.r4.2xlarge
-              - db.r4.3xlarge
-            default_instance_type: db.r4.large
+            new:
+              db_parameter_group_name: default
+              db_cluster_parameter_group_name: default
+              publicly_accessible: false
+              available_types:
+                - db.r4.large
+                - db.r4.2xlarge
+                - db.r4.3xlarge
+              default_instance_type: db.r4.large
         YAML
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts yaml }
@@ -106,17 +108,18 @@ RSpec.describe RdsConcerto::CLI do
             account_id: 111111111
           database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
           db_instance:
-            db_parameter_group_name: default
-            db_cluster_parameter_group_name: default
-            publicly_accessible: false
-            source_instance:
-              identifier: a
+            source:
+              identifier: yabai
               cluster_identifier: b
-            available_types:
-              - db.r4.large
-              - db.r4.2xlarge
-              - db.r4.3xlarge
-            default_instance_type: db.r4.large
+            new:
+              db_parameter_group_name: default
+              db_cluster_parameter_group_name: default
+              publicly_accessible: false
+              available_types:
+                - db.r4.large
+                - db.r4.2xlarge
+                - db.r4.3xlarge
+              default_instance_type: db.r4.large
         YAML
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts yaml }
@@ -145,17 +148,18 @@ RSpec.describe RdsConcerto::CLI do
             account_id: 111111111
           database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
           db_instance:
-            db_parameter_group_name: default
-            db_cluster_parameter_group_name: default
-            publicly_accessible: false
-            source_instance:
-              identifier: a
+            source:
+              identifier: yabai
               cluster_identifier: b
-            available_types:
-              - db.r4.large
-              - db.r4.2xlarge
-              - db.r4.3xlarge
-            default_instance_type: db.r4.large
+            new:
+              db_parameter_group_name: default
+              db_cluster_parameter_group_name: default
+              publicly_accessible: false
+              available_types:
+                - db.r4.large
+                - db.r4.2xlarge
+                - db.r4.3xlarge
+              default_instance_type: db.r4.large
         YAML
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts yaml }
