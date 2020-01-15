@@ -25,8 +25,8 @@ RSpec.describe RdsConcerto::CLI do
     File.open(file.path, 'w') { |f| f.puts yaml }
     file
   end
-
   let(:time) { Time.parse('2011-11-11 10:00:00+00') }
+
   describe 'create' do
     context 'empty config file' do
       it 'error' do
@@ -78,7 +78,19 @@ RSpec.describe RdsConcerto::CLI do
         }.to raise_error(RuntimeError, 'command failed. do not found resource.')
       end
       it 'do not delete source db instance' do
-        skip
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
+          stub_responses: {
+            describe_db_instances: {
+              db_instances: [
+                { db_instance_identifier: 'deleted', db_instance_class: 'yabai', engine: 'large.2x',
+                  engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              ]
+            }
+          }
+        )
+        expect {
+          RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'yabai', config: valid_yaml_file.path })
+        }.to raise_error(RuntimeError, /can not delete source resource/)
       end
     end
     it 'be success' do
