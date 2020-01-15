@@ -6,7 +6,7 @@ class RdsConcerto::CLI < Thor
   add_runtime_options!
 
   desc "list", "レプリカやクローン一覧の閲覧"
-  option :config, aliases: "-c", default: RdsConcerto::Aurora::DEFAULT_FILE_NAME, desc: "設定ファイル"
+  option :config, aliases: "-c", default: RdsConcerto::DEFAULT_CONFIG_FILE_NAME, desc: "設定ファイル"
   def list(stdout=true)
     out = ''
     out += show_replica
@@ -22,14 +22,14 @@ class RdsConcerto::CLI < Thor
 
   desc "create NAME(レプリカを選択したい場合。指定しなければ適当に選びます)", "インスタンスの作成"
   option :type, aliases: "-t", default: nil, desc: "インスタンスタイプ"
-  option :config, aliases: "-c", default: RdsConcerto::Aurora::DEFAULT_FILE_NAME, desc: "設定ファイル"
+  option :config, aliases: "-c", default: RdsConcerto::DEFAULT_CONFIG_FILE_NAME, desc: "設定ファイル"
   def create(name = nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
     concerto.clone!(instance_name: name, klass: options[:type], dry_run: options[:pretend])
   end
 
   desc "destroy NAME", "インスタンスの削除"
-  option :config, aliases: "-c", default: RdsConcerto::Aurora::DEFAULT_FILE_NAME,  desc: "設定ファイル"
+  option :config, aliases: "-c", default: RdsConcerto::DEFAULT_CONFIG_FILE_NAME,  desc: "設定ファイル"
   option :name, desc: "instance identifier of delete target", required: true
   def destroy
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
