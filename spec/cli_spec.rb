@@ -27,6 +27,17 @@ RSpec.describe RdsConcerto::CLI do
       File.open(file.path, 'w') { |f| f.puts yaml }
       file
     end
+    context 'empty config file' do
+      it 'error' do
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+        file = Tempfile.new('yaml')
+        File.open(file.path, 'w') { |f| f.puts 'aaa:' }
+
+        expect {
+          RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: file.path })
+        }.to raise_error(RuntimeError, /Check config yaml/)
+      end
+    end
     context 'have no source db' do
       it 'error' do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
