@@ -1,7 +1,7 @@
 RSpec.describe RdsConcerto::CLI do
   let(:time) { Time.parse('2011-11-11 10:00:00+00') }
   describe 'create' do
-    let(:config_path) do
+    let(:yaml_file) do
       yaml = <<~YAML
           aws:
             region: ap-northeast-1
@@ -24,13 +24,13 @@ RSpec.describe RdsConcerto::CLI do
       YAML
       file = Tempfile.new('yaml')
       File.open(file.path, 'w') { |f| f.puts yaml }
-      file.path
+      file
     end
     context 'have no source db' do
       it 'error' do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
-          RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: config_path })
+          RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: yaml_file.path })
         }.to raise_error(RuntimeError)
       end
     end
@@ -50,10 +50,10 @@ RSpec.describe RdsConcerto::CLI do
           }
         )
         expect(
-          RdsConcerto::CLI.new.invoke(:create, [], { type: nil, config: config_path })
+          RdsConcerto::CLI.new.invoke(:create, [], { type: nil, config: yaml_file.path })
         ).to be_truthy
         expect(
-          RdsConcerto::CLI.new.invoke(:create, [], { config: config_path })
+          RdsConcerto::CLI.new.invoke(:create, [], { config: yaml_file.path })
         ).to be_truthy
       end
     end
@@ -61,7 +61,7 @@ RSpec.describe RdsConcerto::CLI do
 
   describe 'destroy' do
     context 'when it assigns db instance that do not exist' do
-      let(:config_path) do
+      let(:yaml_file) do
         yaml = <<~YAML
           aws:
             region: ap-northeast-1
@@ -84,12 +84,12 @@ RSpec.describe RdsConcerto::CLI do
         YAML
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts yaml }
-        file.path
+        file
       end
       it 'error' do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
-          RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: config_path })
+          RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: yaml_file.path })
         }.to raise_error(RuntimeError, 'command failed. do not found resource.')
       end
     end
@@ -97,7 +97,7 @@ RSpec.describe RdsConcerto::CLI do
 
   describe 'list' do
     context 'replica has no instance' do
-      let(:config_path) do
+      let(:yaml_file) do
         yaml = <<~YAML
           aws:
             region: ap-northeast-1
@@ -120,13 +120,13 @@ RSpec.describe RdsConcerto::CLI do
         YAML
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts yaml }
-        file.path
+        file
       end
       before do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
       end
       it "return String" do
-        actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: config_path })
+        actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: yaml_file.path })
         expected = <<~EOH
         -レプリカ-
         -クローン-
@@ -136,7 +136,7 @@ RSpec.describe RdsConcerto::CLI do
     end
 
     context 'replica has thow instance' do
-      let(:config_path) do
+      let(:yaml_file) do
         yaml = <<~YAML
           aws:
             region: ap-northeast-1
@@ -159,7 +159,7 @@ RSpec.describe RdsConcerto::CLI do
         YAML
         file = Tempfile.new('yaml')
         File.open(file.path, 'w') { |f| f.puts yaml }
-        file.path
+        file
       end
       before do
         time = Time.parse('2011-11-11 10:00:00+00')
@@ -181,7 +181,7 @@ RSpec.describe RdsConcerto::CLI do
       end
 
       it "return String" do
-        actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: config_path })
+        actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: yaml_file.path })
         expected = <<~EOH
         -レプリカ-
         -クローン--------
