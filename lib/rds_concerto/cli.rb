@@ -30,7 +30,7 @@ class RdsConcerto::CLI < Thor
 
   desc "destroy NAME", "インスタンスの削除"
   option :config, aliases: "-c", default: RdsConcerto::DEFAULT_CONFIG_FILE_NAME,  desc: "設定ファイル"
-  option :name, desc: "instance identifier of delete target", required: true
+  option :name, desc: "instance identifier of delete target"
   def destroy(name=nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
     concerto.destroy!(name: name || options[:name], dry_run: options[:pretend])

@@ -1,20 +1,16 @@
 class RdsConcerto::Aurora::Client
-  attr_reader :config, :rds_client
+  attr_reader :rds_client
 
-  def initialize(rds_client: , config: )
-    @config = config
-    if ENV['VERBOSE_CONCERTO']
-      puts @config.inspect
-    end
+  def initialize(rds_client: )
     @rds_client = rds_client
   end
 
   def source_db_instance
-    @source_db_instance ||= self.all_instances.detect { |x| x[:name] == config.source_identifier }
+    @source_db_instance ||= self.all_instances.detect { |x| x[:name] == Config.source_identifier }
   end
 
   def cloned_instances
-    list = self.all_instances.reject { |x| x[:name] == config.source_identifier }
+    list = self.all_instances.reject { |x| x[:name] == Config.source_identifier }
     list.select { |x| /^#{clone_instance_name_base}/ =~ x[:name] }
   end
 
@@ -40,16 +36,16 @@ class RdsConcerto::Aurora::Client
     name = "#{clone_instance_name_base}-#{Time.now.to_i}"
     identifier_value = identifier || `hostname`.chomp[0..10]
     tags = [{ key: "created_by", value: identifier_value }]
-    klass ||= config.default_instance_type
-    RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name, config: config).
+    klass ||= Config.default_instance_type
+    RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).
       create!(tags: tags, instance_class: klass) unless dry_run
   end
 
   def destroy!(name: nil, skip_final_snapshot: true, dry_run: false)
-    if [config.source_identifier, config.source_cluster_identifier].include?(name)
+    if [Config.source_identifier, Config.source_cluster_identifier].include?(name)
       raise 'command failed. can not delete source resource.'
     end
-    if not cloned_instances.map {|x| x[:name] }.include?(name)
+    if not cloned_instances.map { |x| x[:name] }.include?(name)
       raise 'command failed. do not found resource.'
     end
     RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).
@@ -59,7 +55,7 @@ class RdsConcerto::Aurora::Client
   private
 
   def get_arn(identifier: )
-    "arn:aws:rds:#{config.region}:#{config.aws_account_id}:db:#{identifier}"
+    "arn:aws:rds:#{Config.region}:#{Config.aws_account_id}:db:#{identifier}"
   end
 
   def clone_instance_name_base

@@ -7,12 +7,14 @@ module RdsConcerto::Aurora
     config_path = config_path || ENV['CONCERT_CONFIG_PATH'] || RdsConcerto::DEFAULT_CONFIG_FILE_NAME
     yaml = File.open(config_path)
     hash = YAML.load(ERB.new(yaml.read).result) || raise('yaml parse error')
-    config = Config.new(hash)
-    unless config.valid?
-      raise config.errors.inspect
+    Config.configure_from_hash(hash)
+    if ENV['VERBOSE_CONCERTO']
+      puts Config.inspect
+    end
+    unless Config.valid?
+      raise Config.errors.inspect
     end
     return Client.new(
-      config: config,
       rds_client: Aws::RDS::Client.new(rds_client_args(hash)),
     )
   end
