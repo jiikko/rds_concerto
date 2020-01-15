@@ -118,8 +118,8 @@ RSpec.describe RdsConcerto::CLI do
       it "return String" do
         actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: valid_yaml_file.path })
         expected = <<~EOH
-        -source db instances-
-        -クローン-
+        -source db instance-
+        -clone db instances-
         EOH
         expect(actual).to eq(expected)
       end
@@ -148,7 +148,7 @@ RSpec.describe RdsConcerto::CLI do
       it "return String" do
         actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: valid_yaml_file.path })
         expected = <<~EOH
-        -source db instances--------
+        -source db instance--------
         name: yabai
         size: yabai
         engine: large.2x
@@ -157,7 +157,7 @@ RSpec.describe RdsConcerto::CLI do
         status: available
         created_at: 2011-11-11 10:00:00 UTC
 
-        -クローン--------
+        -clone db instances--------
         name: yabai-clone
         size: sugoi
         engine: large.3x

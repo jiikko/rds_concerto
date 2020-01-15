@@ -62,7 +62,7 @@ class RdsConcerto::CLI < Thor
 
   def show_replica
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    out = "-source db instances-"
+    out = "-source db instance-"
     row = <<~EOH
       -------
       name: %{name}
@@ -82,7 +82,7 @@ class RdsConcerto::CLI < Thor
 
   def show_clones
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    out = "-クローン-"
+    out = "-clone db instances-"
     row = <<~EOH
       -------
       name: %{name}
