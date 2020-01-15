@@ -1,6 +1,6 @@
 # RdsConcerto
 
-This gem provide feature which to clone Aurora instance.
+This gem provide feature which to clone Aurora(MySQL) instance.
 
 ## Installation
 
