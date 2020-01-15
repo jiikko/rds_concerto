@@ -43,16 +43,13 @@ RSpec.describe RdsConcerto::CLI do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
           RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: yaml_file.path })
-        }.to raise_error(RuntimeError)
+        }.to raise_error(RuntimeError, /source db instance do not found/)
       end
     end
     context 'have 1 source db' do
       it 'be success' do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
           stub_responses: {
-            list_tags_for_resource: {
-              tag_list: [{ key: 'created_at', value: 'izumikonata' }]
-            },
             describe_db_instances: {
               db_instances: [
                 { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
@@ -72,6 +69,32 @@ RSpec.describe RdsConcerto::CLI do
   end
 
   describe 'destroy' do
+    let(:yaml_file) do
+      yaml = <<~YAML
+        aws:
+          region: ap-northeast-1
+          access_key_id: <%= '11111111' %>
+          secret_access_key: <%= '44' %>
+          account_id: 111111111
+        database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
+        db_instance:
+          source:
+            identifier: clone
+            cluster_identifier: b
+          new:
+            db_parameter_group_name: default
+            db_cluster_parameter_group_name: default
+            publicly_accessible: false
+            available_types:
+              - db.r4.large
+              - db.r4.2xlarge
+              - db.r4.3xlarge
+            default_instance_type: db.r4.large
+      YAML
+      file = Tempfile.new('yaml')
+      File.open(file.path, 'w') { |f| f.puts yaml }
+      file
+    end
     context 'when it assigns db instance that do not exist' do
       let(:yaml_file) do
         yaml = <<~YAML
@@ -105,6 +128,23 @@ RSpec.describe RdsConcerto::CLI do
           RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: yaml_file.path })
         }.to raise_error(RuntimeError, 'command failed. do not found resource.')
       end
+      it 'do not delete source db instance' do
+        skip
+      end
+    end
+    it 'be success' do
+      allow_any_instance_of(RdsConcerto::Aurora::Resource).to receive(:delete!)
+      allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
+        stub_responses: {
+          describe_db_instances: {
+            db_instances: [
+              { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
+                engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+            ]
+          }
+        }
+      )
+      RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'yabai', config: yaml_file.path })
     end
   end
 

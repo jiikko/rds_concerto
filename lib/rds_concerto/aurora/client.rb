@@ -14,7 +14,7 @@ class RdsConcerto::Aurora::Client
   end
 
   def cloned_instances
-    self.all_instances.reject{|x| x[:name] == config.source_identifier }
+    self.all_instances.reject {|x| x[:name] == config.source_identifier }
   end
 
   def all_instances
@@ -63,7 +63,7 @@ class RdsConcerto::Aurora::Client
     if not cloned_instances.map {|x| x[:name] }.include?(name)
       raise 'command failed. do not found resource.'
     end
-    RdsConcerto::Aurora::Resource.new(rds_client, name: name).
+    RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).
       delete!(skip_final_snapshot: skip_final_snapshot) unless dry_run
   end
 
