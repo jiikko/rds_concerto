@@ -3,25 +3,25 @@ RSpec.describe RdsConcerto::CLI do
   describe 'create' do
     let(:yaml_file) do
       yaml = <<~YAML
-          aws:
-            region: ap-northeast-1
-            access_key_id: <%= '11111111' %>
-            secret_access_key: <%= '44' %>
-            account_id: 111111111
-          database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
-          db_instance:
-            source:
-              identifier: yabai
-              cluster_identifier: b
-            new:
-              db_parameter_group_name: default
-              db_cluster_parameter_group_name: default
-              publicly_accessible: false
-              available_types:
-                - db.r4.large
-                - db.r4.2xlarge
-                - db.r4.3xlarge
-              default_instance_type: db.r4.large
+        aws:
+          region: ap-northeast-1
+          access_key_id: <%= '11111111' %>
+          secret_access_key: <%= '44' %>
+          account_id: 111111111
+        database_url_format: "mysql2://{db_user:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
+        db_instance:
+          source:
+            identifier: yabai
+            cluster_identifier: b
+          new:
+            db_parameter_group_name: default
+            db_cluster_parameter_group_name: default
+            publicly_accessible: false
+            available_types:
+              - db.r4.large
+              - db.r4.2xlarge
+              - db.r4.3xlarge
+            default_instance_type: db.r4.large
       YAML
       file = Tempfile.new('yaml')
       File.open(file.path, 'w') { |f| f.puts yaml }
