@@ -74,8 +74,8 @@ class RdsConcerto::CLI < Thor
       created_at: %{created_at}
     EOH
 
-    concerto.source_db_instances.each do |hash|
-      out << row % hash
+    if concerto.source_db_instance
+      out << row % concerto.source_db_instance
     end
     out
   end
@@ -94,7 +94,7 @@ class RdsConcerto::CLI < Thor
       created_at: %{created_at}
       tags: %{tag}
     EOH
-    concerto.cloned_list.each do |hash|
+    concerto.cloned_instances.each do |hash|
       out << row % hash
     end
     out

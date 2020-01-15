@@ -149,7 +149,7 @@ RSpec.describe RdsConcerto::CLI do
       end
     end
 
-    context 'replica has thow instance' do
+    context 'replica has two instance' do
       let(:yaml_file) do
         yaml = <<~YAML
           aws:

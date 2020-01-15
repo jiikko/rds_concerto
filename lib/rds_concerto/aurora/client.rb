@@ -9,22 +9,15 @@ class RdsConcerto::Aurora::Client
     @rds_client = rds_client
   end
 
-  def source_db_instances(condition: :all)
-    replica = self.all_list.select { |x| x[:name] == config.source_identifier }
-
-    case condition
-    when :all
-      replica
-    when :available
-      replica.select { |x| x[:status] == "available" }
-    end
+  def source_db_instance
+    self.all_instances.detect { |x| x[:name] == config.source_identifier }
   end
 
-  def cloned_list
-    self.all_list.reject{|x| x[:name] == config.source_identifier }
+  def cloned_instances
+    self.all_instances.reject{|x| x[:name] == config.source_identifier }
   end
 
-  def all_list
+  def all_instances
     rds_client.describe_db_instances.db_instances.map do |db_instance|
       response = rds_client.list_tags_for_resource(
         resource_name: get_arn(identifier: db_instance.db_instance_identifier)
@@ -44,11 +37,15 @@ class RdsConcerto::Aurora::Client
 
   def clone!(instance_name: nil, klass: nil, identifier: nil, dry_run: false)
     unless instance_name
-      list = source_db_instances(condition: :available)
-      if list.empty?
+      source = source_db_instance
+      unless source
         raise 'source db instance do not found'
       end
-      instance_name = list[0][:name]
+      unless source[:status] == "available"
+        raise 'source db instance do not available'
+      end
+
+      instance_name = source[:name]
     end
     klass ||= config.default_instance_type
 
@@ -59,10 +56,10 @@ class RdsConcerto::Aurora::Client
   end
 
   def destroy!(name: nil, skip_final_snapshot: true, dry_run: false)
-    if [ config.source_identifier, config.source_cluster_identifier].include?(name)
+    if [config.source_identifier, config.source_cluster_identifier].include?(name)
       raise 'command failed. can not delete source resource.'
     end
-    if not cloned_list.map {|x| x[:name] }.include?(name)
+    if not cloned_instances.map {|x| x[:name] }.include?(name)
       raise 'command failed. do not found resource.'
     end
     delete_resouces!(name: name, skip_final_snapshot: skip_final_snapshot) unless dry_run
