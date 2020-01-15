@@ -23,11 +23,11 @@ class RdsConcerto::Aurora::Resource
   def restore_db_cluster!(name: , tags: )
     rds_client.restore_db_cluster_to_point_in_time(
       db_cluster_identifier: name,
-      source_db_cluster_identifier: Config.source_cluster_identifier,
+      source_db_cluster_identifier: RdsConcerto::Config.source_cluster_identifier,
       restore_type: "copy-on-write",
       use_latest_restorable_time: true,
-      db_cluster_parameter_group_name: Config.db_cluster_parameter_group_name,
-      db_subnet_group_name: Config.db_subnet_group_name,
+      db_cluster_parameter_group_name: RdsConcerto::Config.db_cluster_parameter_group_name,
+      db_subnet_group_name: RdsConcerto::Config.db_subnet_group_name,
       tags: tags,
     )
   end
@@ -40,8 +40,8 @@ class RdsConcerto::Aurora::Resource
       engine: "aurora-mysql",
       multi_az: false,
       publicly_accessible: true,
-      db_subnet_group_name: Config.db_subnet_group_name,
-      db_parameter_group_name: Config.db_parameter_group_name,
+      db_subnet_group_name: RdsConcerto::Config.db_subnet_group_name,
+      db_parameter_group_name: RdsConcerto::Config.db_parameter_group_name,
       tags: tags,
     )
   end

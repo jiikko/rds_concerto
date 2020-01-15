@@ -1,6 +1,6 @@
 require 'singleton'
 
-class Config
+class RdsConcerto::Config
   include Singleton
 
   class << self

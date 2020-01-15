@@ -7,6 +7,5 @@ end
 
 require "rds_concerto/cli"
 require "rds_concerto/config"
-require "rds_concerto/aurora"
 require "rds_concerto/aurora/client"
 require "rds_concerto/aurora/resource"

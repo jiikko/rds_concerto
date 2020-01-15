@@ -6,11 +6,11 @@ class RdsConcerto::Aurora::Client
   end
 
   def source_db_instance
-    @source_db_instance ||= self.all_instances.detect { |x| x[:name] == Config.source_identifier }
+    @source_db_instance ||= self.all_instances.detect { |x| x[:name] == RdsConcerto::Config.source_identifier }
   end
 
   def cloned_instances
-    list = self.all_instances.reject { |x| x[:name] == Config.source_identifier }
+    list = self.all_instances.reject { |x| x[:name] == RdsConcerto::Config.source_identifier }
     list.select { |x| /^#{clone_instance_name_base}/ =~ x[:name] }
   end
 
@@ -36,13 +36,13 @@ class RdsConcerto::Aurora::Client
     name = "#{clone_instance_name_base}-#{Time.now.to_i}"
     identifier_value = identifier || `hostname`.chomp[0..10]
     tags = [{ key: "created_by", value: identifier_value }]
-    klass ||= Config.default_instance_type
+    klass ||= RdsConcerto::Config.default_instance_type
     RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).
       create!(tags: tags, instance_class: klass) unless dry_run
   end
 
   def destroy!(name: nil, skip_final_snapshot: true, dry_run: false)
-    if [Config.source_identifier, Config.source_cluster_identifier].include?(name)
+    if [RdsConcerto::Config.source_identifier, RdsConcerto::Config.source_cluster_identifier].include?(name)
       raise 'command failed. can not delete source resource.'
     end
     if not cloned_instances.map { |x| x[:name] }.include?(name)
@@ -55,7 +55,7 @@ class RdsConcerto::Aurora::Client
   private
 
   def get_arn(identifier: )
-    "arn:aws:rds:#{Config.region}:#{Config.aws_account_id}:db:#{identifier}"
+    "arn:aws:rds:#{RdsConcerto::Config.region}:#{RdsConcerto::Config.aws_account_id}:db:#{identifier}"
   end
 
   def clone_instance_name_base
