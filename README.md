@@ -75,7 +75,6 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## TODO
 * raise error when arg do not include in available_types
-* matomeru spec
 * matomeru args of RdsConcerto::CLI methods
 * Implement url command
   * I want to use that it like `DATABASE_URL=$(bin/concerto url) bin/rails c`
