@@ -142,7 +142,7 @@ RSpec.describe RdsConcerto::CLI do
       it "return String" do
         actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: yaml_file.path })
         expected = <<~EOH
-        -レプリカ-
+        -source db instances-
         -クローン-
         EOH
         expect(actual).to eq(expected)
@@ -198,7 +198,7 @@ RSpec.describe RdsConcerto::CLI do
       it "return String" do
         actual = RdsConcerto::CLI.new.invoke(:list, [false], { config: yaml_file.path })
         expected = <<~EOH
-        -レプリカ-
+        -source db instances-
         -クローン--------
         name: 1
         size: yabai

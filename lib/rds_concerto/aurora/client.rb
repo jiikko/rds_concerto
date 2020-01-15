@@ -9,12 +9,9 @@ class RdsConcerto::Aurora::Client
     @rds_client = rds_client
   end
 
-  def source_list(condition: :all)
-    replica_list(condition: :available)
-  end
-
-  def replica_list(condition: :all)
+  def source_db_instances(condition: :all)
     replica = self.all_list.select { |x| x[:name] == config.source_identifier }
+
     case condition
     when :all
       replica
@@ -47,7 +44,7 @@ class RdsConcerto::Aurora::Client
 
   def clone!(instance_name: nil, klass: nil, identifier: nil, dry_run: false)
     unless instance_name
-      list = source_list
+      list = source_db_instances(condition: :available)
       if list.empty?
         raise 'source db instance do not found'
       end

@@ -62,7 +62,7 @@ class RdsConcerto::CLI < Thor
 
   def show_replica
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    out = "-レプリカ-"
+    out = "-source db instances-"
     row = <<~EOH
       -------
       name: %{name}
@@ -73,7 +73,8 @@ class RdsConcerto::CLI < Thor
       status: %{status}
       created_at: %{created_at}
     EOH
-    concerto.replica_list.each do |hash|
+
+    concerto.source_db_instances.each do |hash|
       out << row % hash
     end
     out
