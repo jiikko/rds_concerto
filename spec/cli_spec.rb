@@ -43,7 +43,7 @@ RSpec.describe RdsConcerto::CLI do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
           RdsConcerto::CLI.new.invoke(:create, [], { type: {}, config: valid_yaml_file.path })
-        }.to raise_error(RuntimeError, /source db instance do not found/)
+        }.to raise_error(RuntimeError, /Source db instance do not found/)
       end
     end
     context 'have 1 source db' do
@@ -74,7 +74,7 @@ RSpec.describe RdsConcerto::CLI do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
         expect {
           RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'a', config: valid_yaml_file.path })
-        }.to raise_error(RuntimeError, 'command failed. do not found resource.')
+        }.to raise_error(RuntimeError, 'Command failed. Do not found resource.')
       end
       it 'do not delete source db instance' do
         allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
@@ -89,7 +89,7 @@ RSpec.describe RdsConcerto::CLI do
         )
         expect {
           RdsConcerto::CLI.new.invoke(:destroy, [], { name: 'yabai', config: valid_yaml_file.path })
-        }.to raise_error(RuntimeError, /can not delete source resource/)
+        }.to raise_error(RuntimeError, /Can not delete source resource/)
       end
     end
     it 'be success' do
