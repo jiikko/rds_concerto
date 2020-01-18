@@ -43,13 +43,34 @@ class RdsConcerto::Aurora::Client
 
   def destroy!(name: nil, skip_final_snapshot: true, dry_run: false)
     if [RdsConcerto::Config.source_identifier, RdsConcerto::Config.source_cluster_identifier].include?(name)
-      raise 'command failed. can not delete source resource.'
+      raise 'Command failed. Can not delete source resource.'
     end
     if not cloned_instances.map { |x| x[:name] }.include?(name)
-      raise 'command failed. do not found resource.'
+      raise 'Command failed. Do not found resource.'
     end
     RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).
       delete!(skip_final_snapshot: skip_final_snapshot) unless dry_run
+  end
+
+  def url(name)
+    unless RdsConcerto::Config.has_vals_for_url_command?
+      raise 'Please set vals in `.concerto.yaml`.'
+    end
+    instance =
+      if name
+        cloned_instances.detect {|i| i[:name] == name }
+      else
+        cloned_instances.first
+      end
+    unless instance
+      puts "Instance is not existing."
+      exit(1)
+    end
+    unless instance[:endpoint]
+      puts "A instance is continue preparing."
+      exit(1)
+    end
+    RdsConcerto::Config.database_url_format.gsub('{{endpoint}}', instance[:endpoint])
   end
 
   private
@@ -61,12 +82,13 @@ class RdsConcerto::Aurora::Client
   def clone_instance_name_base
     source = source_db_instance
     unless source
-      raise 'source db instance do not found'
+      raise 'Source db instance do not found'
     end
     unless source[:status] == "available"
-      raise 'source db instance do not available'
+      raise 'Source db instance do not available'
     end
     instance_name = source[:name]
     "#{source[:name]}-clone"
   end
+
 end

@@ -13,7 +13,10 @@ class RdsConcerto::Config
       :available_types,
       :db_parameter_group_name,
       :db_cluster_parameter_group_name,
-      :db_subnet_group_name
+      :db_subnet_group_name,
+      :master_user_password,
+      :master_username,
+      :database_url_format
 
     def configure_from_hash(hash)
       @source_identifier = hash.dig('db_instance', 'source', 'identifier')
@@ -25,6 +28,9 @@ class RdsConcerto::Config
       @db_parameter_group_name = hash.dig('db_instance', 'new', 'db_parameter_group_name')
       @db_cluster_parameter_group_name = hash.dig('db_instance', 'new', 'db_cluster_parameter_group_name')
       @db_subnet_group_name = hash.dig('db_instance', 'new', 'db_subnet_group_name')
+      @master_user_password = hash.dig('db_instance', 'new', 'master_user_password')
+      @master_username = hash.dig('db_instance', 'new', 'master_username')
+      @database_url_format = hash.dig('database_url_format')
 
       @errors = []
     end
@@ -33,6 +39,10 @@ class RdsConcerto::Config
       true
       validate_presence
       return @errors.empty?
+    end
+
+    def has_vals_for_url_command?
+      !!database_url_format
     end
 
     def errors

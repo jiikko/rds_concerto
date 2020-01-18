@@ -36,27 +36,11 @@ class RdsConcerto::CLI < Thor
     concerto.destroy!(name: name || options[:name], dry_run: options[:pretend])
   end
 
-  # desc "url NAME(URL を取得するインスタンスを指定したい場合。指定しなければ適当に選びます)", "インスタンスに接続するための URL の取得"
-  # def url(name = nil)
-  #   instance =
-  #     if name
-  #       concerto.clone_list.detect {|i| i[:name] == name }
-  #     else
-  #       concerto.clone_list.first
-  #     end
-  #   unless instance
-  #     puts "Instance is not existing."
-  #     exit(1)
-  #   end
-  #   url = `xxx`.chomp
-  #   if url == ""
-  #     puts "Please auth on heroku CLI."
-  #     exit(1)
-  #   end
-  #   uri = URI.parse(url)
-  #   uri.host = instance[:endpoint]
-  #   puts uri.to_s
-  # end
+  desc "url NAME(URL を取得するインスタンスを指定したい場合。指定しなければ適当に選びます)", "インスタンスに接続するための URL の取得"
+  def url(name = nil)
+    concerto = RdsConcerto::Aurora.new(config_path: options[:config])
+    puts concerto.url(name)
+  end
 
   private
 

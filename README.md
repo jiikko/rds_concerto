@@ -25,10 +25,10 @@ Put yaml to project root as `.concert.yml`.
 ```yaml
 aws:
   region: ap-northeast-1
-  access_key_id: <%= '11111111' * 2 %>
-  secret_access_key: <%= '44' * 2 %>
+  access_key_id: aaaaaaaaaaaaaaaaa
+  secret_access_key: bbbbbbbbbbbbbbb
   account_id: 111111111
-database_url_format: "mysql2://{db_user}:{db_password}@#%{db_endpoint}/{db_name}?pool=5"
+database_url_format: "mysql2://master_username:master_user_password@%{{endpoint}}/your_db_name?pool=5"
 db_instance:
   source:
     identifier: a
@@ -39,8 +39,6 @@ db_instance:
       - db.r4.2xlarge
       - db.r4.3xlarge
     default_instance_type: db.r4.large
-    master_username: new_username
-    master_user_password: new_password
     db_parameter_group_name: default
     db_cluster_parameter_group_name: default
     publicly_accessible: false
@@ -49,8 +47,9 @@ db_instance:
 
 * db_instance.db_subnet_group_name
   * optional. need subnet name, if you want public access.
-* db_instance.master_username, db_instance.master_user_password
+* database_url_format
   * optional.
+  * If you exec url command, need it.
 
 ### Command
 ```shell
@@ -76,8 +75,5 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## TODO
 * raise error when arg do not include in available_types
 * matomeru args of RdsConcerto::CLI methods
-* Implement url command
-  * I want to use that it like `DATABASE_URL=$(bin/concerto url) bin/rails c`
-  * `DATABASE_URL=mysql2://hogehoge:hogehoge@dbdb.ap-northeast-1.rds.amazonaws.com/monomydb?pool=5`
 * command log
 * override mysql login and password
