@@ -28,7 +28,7 @@ aws:
   access_key_id: aaaaaaaaaaaaaaaaa
   secret_access_key: bbbbbbbbbbbbbbb
   account_id: 111111111
-database_url_format: "mysql2://master_username:master_user_password@%{{endpoint}}/your_db_name?pool=5"
+database_url_format: "mysql2://master_username:master_user_password@{{endpoint}}/your_db_name?pool=5"
 db_instance:
   source:
     identifier: a
