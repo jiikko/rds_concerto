@@ -77,3 +77,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * matomeru args of RdsConcerto::CLI methods
 * command log
 * override mysql login and password
+* Web interface
