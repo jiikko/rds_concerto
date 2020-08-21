@@ -42,6 +42,16 @@ class RdsConcerto::CLI < Thor
     puts concerto.url(name)
   end
 
+  def start(name = nil)
+    concerto = RdsConcerto::Aurora.new(config_path: options[:config])
+    concerto.start_from_stopping(name)
+  end
+
+  def stop(name = nil)
+    concerto = RdsConcerto::Aurora.new(config_path: options[:config])
+    concerto.stop_from_available(name)
+  end
+
   private
 
   def show_replica

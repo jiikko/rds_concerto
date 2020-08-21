@@ -18,6 +18,12 @@ class RdsConcerto::Aurora::Resource
     }
   end
 
+  def start!
+  end
+
+  def stop!
+  end
+
   private
 
   def restore_db_cluster!(name: , tags: )

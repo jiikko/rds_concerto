@@ -73,6 +73,20 @@ class RdsConcerto::Aurora::Client
     RdsConcerto::Config.database_url_format.gsub('{{endpoint}}', instance[:endpoint])
   end
 
+  def start_from_stopping
+    if not cloned_instances.map { |x| x[:name] }.include?(name)
+      raise 'Command failed. Do not found resource.'
+    end
+    RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).start! unless dry_run
+  end
+
+  def stop_from_available
+    if not cloned_instances.map { |x| x[:name] }.include?(name)
+      raise 'Command failed. Do not found resource.'
+    end
+    RdsConcerto::Aurora::Resource.new(rds_client: rds_client, name: name).stop! unless dry_run
+  end
+
   private
 
   def get_arn(identifier: )
