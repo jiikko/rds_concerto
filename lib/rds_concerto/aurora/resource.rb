@@ -19,9 +19,12 @@ class RdsConcerto::Aurora::Resource
   end
 
   def start!
+    { start_db_cluster_response: client.start_db_cluster(db_cluster_identifier: name) }
   end
 
+  # https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/RDS/Client.html#stop_db_cluster-instance_method
   def stop!
+    { stop_db_cluster_response: client.stop_db_cluster(db_cluster_identifier: name) }
   end
 
   private
