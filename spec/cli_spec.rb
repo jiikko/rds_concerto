@@ -110,6 +110,68 @@ RSpec.describe RdsConcerto::CLI do
     end
   end
 
+  describe 'start' do
+    before do
+      allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+    end
+    context 'replica has two instance' do
+      before do
+        time = Time.parse('2011-11-11 10:00:00+00')
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
+          stub_responses: {
+            list_tags_for_resource: {
+              tag_list: [{ key: 'created_at', value: 'izumikonata' }]
+            },
+            describe_db_instances: {
+              db_instances: [
+                { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
+                  engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-clone', db_instance_class: 'sugoi', engine: 'large.3x',
+                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-not-clone', db_instance_class: 'sugoi', engine: 'large.3x',
+                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              ]
+            }
+          }
+        )
+      end
+      it "return String" do
+        expect(RdsConcerto::CLI.new.invoke(:start, [], { name: "yabai-clone", config: valid_yaml_file.path })).not_to be_nil
+      end
+    end
+  end
+
+  describe 'stop' do
+    before do
+      allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(stub_responses: true)
+    end
+    context 'replica has two instance' do
+      before do
+        time = Time.parse('2011-11-11 10:00:00+00')
+        allow(RdsConcerto::Aurora).to receive(:rds_client_args).and_return(
+          stub_responses: {
+            list_tags_for_resource: {
+              tag_list: [{ key: 'created_at', value: 'izumikonata' }]
+            },
+            describe_db_instances: {
+              db_instances: [
+                { db_instance_identifier: 'yabai', db_instance_class: 'yabai', engine: 'large.2x',
+                  engine_version: '1.0', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-clone', db_instance_class: 'sugoi', engine: 'large.3x',
+                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              { db_instance_identifier: 'yabai-not-clone', db_instance_class: 'sugoi', engine: 'large.3x',
+                engine_version: '1.1', endpoint: { address: 'goo.com' }, db_instance_status: 'available', instance_create_time: time },
+              ]
+            }
+          }
+        )
+      end
+      it "return String" do
+        expect(RdsConcerto::CLI.new.invoke(:stop, [], { name: "yabai-clone", config: valid_yaml_file.path })).not_to be_nil
+      end
+    end
+  end
+
   describe 'list' do
     context 'replica has no instance' do
       before do

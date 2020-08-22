@@ -37,19 +37,23 @@ class RdsConcerto::CLI < Thor
   end
 
   desc "url NAME(URL を取得するインスタンスを指定したい場合。指定しなければ適当に選びます)", "インスタンスに接続するための URL の取得"
-  def url(name = nil)
+  def url(name=nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
     puts concerto.url(name)
   end
 
-  def start(name = nil)
+  desc "start NAME", ""
+  option :name, desc: "instance identifier"
+  def start(name=nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    concerto.start_from_stopping(name)
+    concerto.destroy!(name: name || options[:name], dry_run: options[:pretend])
+    concerto.start_from_stopping(name || options[:name], dry_run: options[:pretend])
   end
 
-  def stop(name = nil)
+  desc "stop NAME", ""
+  def stop(name=nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    concerto.stop_from_available(name)
+    concerto.stop_from_available(name || options[:name], dry_run: options[:pretend])
   end
 
   private
