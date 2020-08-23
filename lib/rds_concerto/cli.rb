@@ -46,7 +46,6 @@ class RdsConcerto::CLI < Thor
   option :name, desc: "instance identifier"
   def start(name=nil)
     concerto = RdsConcerto::Aurora.new(config_path: options[:config])
-    concerto.destroy!(name: name || options[:name], dry_run: options[:pretend])
     concerto.start_from_stopping(name || options[:name], dry_run: options[:pretend])
   end
 
